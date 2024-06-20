@@ -35,11 +35,11 @@ if __name__ == '__main__':
     # 设置目标数据库
     ##################################
     # mysql/mongodb/excel/json/csv
-    # database = "mysql"
+    database = "mysql"
     # database = "mongodb"
     # database = "excel"
     # database = "json"
-    database = "csv"
+    # database = "csv"
     ##################################
     db = None
     collection = None
@@ -49,7 +49,11 @@ if __name__ == '__main__':
 
     if database == "mysql":
         import records
-        db = records.Database('mysql://root:123456@localhost/lianjia?charset=utf8', encoding='utf-8')
+        db = records.Database('mysql://root:pass1234@localhost/house_data?charset=utf8&autocommit=True'
+                              ,pool_size=5
+                              ,max_overflow=-1
+                              ,pool_timeout=5
+                              )
     elif database == "mongodb":
         from pymongo import MongoClient
         conn = MongoClient('localhost', 27017)
@@ -93,7 +97,7 @@ if __name__ == '__main__':
     row = 0
     col = 0
     for csv in files:
-        with open(csv, 'r') as f:
+        with open(csv, 'r', encoding='utf-8', errors='ignore') as f:
             for line in f:
                 count += 1
                 text = line.strip()
@@ -116,7 +120,7 @@ if __name__ == '__main__':
                     print(e)
                     continue
                 sale = sale.replace(r'套在售二手房', '')
-                price = price.replace(r'暂无', '0')
+                price = price.replace(r'暂无数据', '0')
                 price = price.replace(r'元/m2', '')
                 price = int(price)
                 sale = int(sale)
@@ -165,5 +169,6 @@ if __name__ == '__main__':
         json.dump(datas, open('xiaoqu.json', 'w'), ensure_ascii=False, indent=2)
     elif database == "csv":
         csv_file.close()
-
+    elif database == "mysql":
+        db.close()
     print("Total write {0} items to database.".format(count))

@@ -1,28 +1,3 @@
-# ************************************************************
-# Sequel Pro SQL dump
-# Version 4541
-#
-# http://www.sequelpro.com/
-# https://github.com/sequelpro/sequelpro
-#
-# Host: 127.0.0.1 (MySQL 5.7.21)
-# Database: lianjia
-# Generation Time: 2018-03-31 12:54:33 +0000
-# ************************************************************
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
-
-# Dump of table xiaoqu
-# ------------------------------------------------------------
-
 DROP TABLE IF EXISTS `xiaoqu`;
 
 CREATE TABLE `xiaoqu` (
@@ -37,12 +12,18 @@ CREATE TABLE `xiaoqu` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
-
-
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+DROP TABLE IF EXISTS `zufang`;
+CREATE TABLE `zufang` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT  COMMENT '主键',
+  `city` varchar(10) DEFAULT NULL  COMMENT '城市',
+  `date` varchar(8) DEFAULT NULL  COMMENT '日期',
+  `district` varchar(50) DEFAULT NULL  COMMENT '区域',
+  `area` varchar(50) DEFAULT NULL  COMMENT '板块',
+  `xiaoqu` varchar(100) DEFAULT NULL  COMMENT '小区',
+  `rent_type` varchar(100) DEFAULT NULL  COMMENT '整租、合租',
+  `layout` varchar(50) DEFAULT NULL  COMMENT '户型',
+  `building_space` int(11) DEFAULT NULL COMMENT '建筑面积',
+  `price` int(11) DEFAULT NULL COMMENT '价格',
+  PRIMARY KEY (`id`),
+  INDEX idx_main_index (date,district,area,xiaoqu)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

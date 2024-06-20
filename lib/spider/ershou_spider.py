@@ -88,21 +88,25 @@ class ErShouSpider(BaseSpider):
             # 获得有小区信息的panel
             house_elements = soup.find_all('li', class_="clear")
             for house_elem in house_elements:
-                price = house_elem.find('div', class_="totalPrice")
-                name = house_elem.find('div', class_='title')
-                desc = house_elem.find('div', class_="houseInfo")
-                pic = house_elem.find('a', class_="img").find('img', class_="lj-lazy")
-
-                # 继续清理数据
-                price = price.text.strip()
+                ## 小区名
+                name = house_elem.find('div', class_='positionInfo')
                 name = name.text.replace("\n", "")
+                ## 房型、面积
+                houseInfo = house_elem.find('div', class_="houseInfo")
+                houseInfo = house_elem.find('div', class_="houseInfo").text.split()
+                layout = houseInfo[2]
+                building_space = houseInfo[4]
+                ## 总价，单价
+                total_price = house_elem.find('div', class_="totalPrice")
+                total_price = total_price.text.replace("\n", "").replace(",", "").strip()
+                ## 单价
+                price = house_elem.find('div', class_="unitPrice")
+                price = price.text.replace("\n", "").replace(",", "").strip()
+                ## 描述
+                desc = house_elem.find('div', class_='title')
                 desc = desc.text.replace("\n", "").strip()
-                pic = pic.get('data-original').strip()
-                # print(pic)
-
-
                 # 作为对象保存
-                ershou = ErShou(chinese_district, chinese_area, name, price, desc, pic)
+                ershou = ErShou(chinese_district, chinese_area, name, layout, building_space, price, total_price, desc)
                 ershou_list.append(ershou)
         return ershou_list
 
