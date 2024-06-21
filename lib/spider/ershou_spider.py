@@ -91,6 +91,7 @@ class ErShouSpider(BaseSpider):
                 ## 小区名
                 name = house_elem.find('div', class_='positionInfo')
                 name = name.text.replace("\n", "")
+                name = name.replace(",", "")
                 ## 房型、面积
                 houseInfo = house_elem.find('div', class_="houseInfo")
                 houseInfo = house_elem.find('div', class_="houseInfo").text.split()
@@ -105,6 +106,7 @@ class ErShouSpider(BaseSpider):
                 ## 描述
                 desc = house_elem.find('div', class_='title')
                 desc = desc.text.replace("\n", "").strip()
+                desc = desc.replace(",", "")
                 # 作为对象保存
                 ershou = ErShou(chinese_district, chinese_area, name, layout, building_space, price, total_price, desc)
                 ershou_list.append(ershou)

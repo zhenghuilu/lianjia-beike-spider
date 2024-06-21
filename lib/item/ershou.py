@@ -23,4 +23,5 @@ class ErShou(object):
                 self.layout + "," + \
                 self.building_space + "," + \
                 self.price + "," + \
+                self.total_price + "," + \
                 self.desc

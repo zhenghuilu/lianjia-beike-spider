@@ -3,6 +3,7 @@
 # author: peter lu
 # 此代码仅供学习与交流，请勿用于商业用途。
 # read data from csv, write to database(mysql)
+
 import os
 import pymysql
 from lib.utility.path import DATA_PATH
@@ -52,7 +53,7 @@ if __name__ == '__main__':
     # date = "20180331"   # 指定采集数据的日期
     # city = "sh"         # 指定采集数据的城市
     city_ch = get_chinese_city(city)
-    csv_dir = "{0}/{1}/zufang/{2}/{3}".format(DATA_PATH, SPIDER_NAME, city, date)
+    csv_dir = "{0}/{1}/ershou/{2}/{3}".format(DATA_PATH, SPIDER_NAME, city, date)
 
     files = list()
     if not os.path.exists(csv_dir):
@@ -71,6 +72,7 @@ if __name__ == '__main__':
     count = 0
     row = 0
     col = 0
+    error_count = 0
     for csv in files:
         with open(csv, 'r', encoding='utf-8', errors='ignore') as f:
             for line in f:
@@ -78,41 +80,40 @@ if __name__ == '__main__':
                 text = line.strip()
                 try:
                     # 如果小区名里面没有逗号，那么总共是6项
-                    if text.count(',') == 6:
-                        date, district, area, xiaoqu_full_name, layout, building_space, price = text.split(',')
+                    if text.count(',') >= 7:
+                        text_array = text.split(',')
+                        date = text_array[0]
+                        district = text_array[1]
+                        area = text_array[2]
+                        xiaoqu = text_array[3]
+                        layout = text_array[4]
+                        building_space = text_array[5]
+                        price = text_array[6]
+                        desc = text_array[7]
                     else:
                         print("数据解析异常：{0}".format(text))
-                    ## 解析出租类型与小区名
-                    if(xiaoqu_full_name.count("·") == 1):
-                        rent_type, xiaoqu = xiaoqu_full_name.split('·')
-                    else:
-                        rent_type = xiaoqu_full_name.split('·')[0]
-                        xiaoqu = xiaoqu_full_name.replace(rent_type+"·","")
-                    price = price.replace(r'暂无数据', '0')
-                    if ("-" in price):
-                        price = price.split("-")[0]
-                    price = int(price)
-                    building_space = building_space.replace(r'平米', '')
-                    if("-" in building_space):
-                        building_space = building_space.split("-")[0]
-                    try:
-                        building_space = float(building_space)
-                    except Exception as ex:
-                        print(text)
-                        print(ex)
+                        error_count = error_count + 1
                         continue
-                    print("count({0}):{1}:{2}:{3}:{4}:{5}:{6}:{7}:{8}".format(count, city_ch, date, district, area, xiaoqu, rent_type,
-                                                                   building_space, price))
+                    ## 建筑面积处理
+                    building_space = building_space.replace(r"平米","")
+                    building_space = float(building_space)
+                    ## 单价处理
+                    price = price.replace(r"元/平","")
+                    price = int(price)
+                    ## 总价处理 fixme
+                    total_price = price * building_space
+                    print("count({0}):{1}:{2}:{3}:{4}:{5}:{6}:{7}:{8}:{9}:{10}"
+                          .format(count, city_ch, date, district, area, xiaoqu, layout, building_space, price, total_price, desc))
                     # 写入mysql数据库
-                    db.query('INSERT INTO zufang (city, date, district, area, xiaoqu, rent_type, layout, building_space, price)'
-                             'VALUES(:city, :date, :district, :area, :xiaoqu, :rent_type, :layout, :building_space, :price)',
-                             city=city_ch, date=date, district=district, area=area, xiaoqu=xiaoqu, rent_type=rent_type,
-                             layout=layout, building_space=building_space, price=price)
+                    db.query('INSERT INTO ershou (city,date,district,area,xiaoqu,layout,building_space,price,total_price,`desc`)'
+                             'VALUES(:city, :date, :district, :area, :xiaoqu, :layout, :building_space, :price, :total_price, :desc)',
+                             city=city_ch, date=date, district=district, area=area, xiaoqu=xiaoqu, layout=layout, building_space=building_space, price=price, total_price=total_price, desc=desc)
                 except Exception as e:
                     print(text)
                     print(e)
-                    ## raise e
+                    error_count = error_count + 1
+                    # raise e
 
     # 写入，并且关闭句柄
     db.close()
-    print("Total write {0} items to database.".format(count))
+    print("Total write {0}, total error {1} items to database.".format(count, error_count))
