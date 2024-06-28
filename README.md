@@ -21,6 +21,7 @@
 - Q: 如何减少并发的爬虫数？ A: 见见base_spider.py的thread_pool_size
 - Q: 为何无法使用xiaoqu_to_chart.py? A: 该脚本现仅支持mac系统
 - Q: 有其他问题反馈途径么？ A: 问题反馈QQ群号635276285。
+- Q: 如何把数据导入到mysql中 A: 运行 “ershou.py”生成文件，再运行“ershou_to_db.py”导入到mysql
 
 ## 小区房价数据爬取
 - 内容格式：采集日期,所属区县,板块名,小区名,挂牌均价,挂牌数
@@ -44,6 +45,12 @@ nj: 南京,
 - 修改 xiaoqu_to_db.py 中的database变量，设置数据最终存入mysql/mongodb/Excel/json
 - python xiaoqu_to_db.py 根据提示将今天采集到的csv数据存入数据库。(默认导出为单一csv文件)
 - python xiaoqu_to_chart.py 将单一csv文件数据通过图表展示。
+
+## 公寓二手房与租房数据爬取
+- ershou_公寓.py 用于爬取公寓二手房的数据
+- zufang_整租1室2室.py 用于爬取公寓租房数据
+- 公寓数据抓取.py 用于爬取公寓的二手房与公寓的租房数据
+
 
 ## 挂牌二手房数据爬取
 - 获取链家网挂牌二手房价数据，数据格式如下：
@@ -71,6 +78,11 @@ nj: 南京,
 - 出租房房价数据存储目录为 data/site/zufang/city/date
 - 新房房价数据存储目录为 data/site/loupan/city/date
 
+## 数据导入数据库
+- 建表语句：lianjia_xiaoqu.sql
+- 运行对应 ershou_to_db.py 把二手房数据从csv文件导入到数据库中
+- 运行对应 zufang_to_db.py 把租房数据从csv文件导入到数据库中
+
 ## 性能
 - 300秒爬取上海市207个版块的2.7万条小区数据，平均每秒90条数据。
 ```
@@ -96,6 +108,9 @@ Total cost 29.757128953933716 second
 
 
 ### 更新记录
+- 2024/06/22 增加了专门爬公寓的数据的功能
+- 2024/06/21 1、修复二手房爬虫的几个小bug；2、增加二手房到数据的导入功能 
+- 2024/06/20 增加户型，面积的抓取，增加租房数据到mysql的功能 
 - 2019/06/21 去除requirements.txt中的webbrower
 - 2018/11/05 增加工具下载二手房缩略图tool/download_ershou_image.py
 - 2018/11/01 增加二手房缩略图地址

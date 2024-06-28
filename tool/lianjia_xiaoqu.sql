@@ -25,7 +25,7 @@ CREATE TABLE `zufang` (
   `building_space` int(11) DEFAULT NULL COMMENT '建筑面积',
   `price` int(11) DEFAULT NULL COMMENT '价格',
   PRIMARY KEY (`id`),
-  INDEX idx_main_index (date,xiaoqu)
+  INDEX idx_main_index (date,district,area,xiaoqu)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE zufang
@@ -46,7 +46,7 @@ CREATE TABLE `ershou` (
   `total_price` int DEFAULT NULL COMMENT '总价',
   `desc` varchar(100) DEFAULT NULL  COMMENT '描述',
   PRIMARY KEY (`id`),
-  INDEX idx_main_index (date,xiaoqu)
+  INDEX idx_main_index (date,district,area,xiaoqu)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE ershou

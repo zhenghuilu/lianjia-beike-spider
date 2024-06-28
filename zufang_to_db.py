@@ -44,8 +44,9 @@ if __name__ == '__main__':
                           ,max_overflow=-1
                           ,pool_timeout=5
                           )
-
-    city = get_city()
+    # 获取城市，默认杭州，如果需要其它城市，打开下面的注释
+    # city = get_city()
+    city = "hz"
     # 准备日期信息，爬到的数据存放到日期相关文件夹下
     date = get_date_string()
     # 获得 csv 文件路径
@@ -111,7 +112,7 @@ if __name__ == '__main__':
                 except Exception as e:
                     print(text)
                     print(e)
-                    ## raise e
+                    raise e
 
     # 写入，并且关闭句柄
     db.close()

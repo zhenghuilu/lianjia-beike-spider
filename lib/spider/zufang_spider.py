@@ -17,6 +17,8 @@ import lib.utility.version
 
 
 class ZuFangBaseSpider(BaseSpider):
+    # 过滤条件，多可条件可合并
+    tag: str = None
     def collect_area_zufang_data(self, city_name, area_name, fmt="csv"):
         """
         对于每个板块,获得这个板块下所有出租房的信息
@@ -30,7 +32,7 @@ class ZuFangBaseSpider(BaseSpider):
         csv_file = self.today_path + "/{0}_{1}.csv".format(district_name, area_name)
         with open(csv_file, "w") as f:
             # 开始获得需要的板块数据
-            zufangs = self.get_area_zufang_info(city_name, area_name)
+            zufangs = self.get_area_zufang_info(city_name, area_name, self.tag)
             # 锁定
             if self.mutex.acquire(1):
                 self.total_num += len(zufangs)
@@ -42,7 +44,7 @@ class ZuFangBaseSpider(BaseSpider):
         print("Finish crawl area: " + area_name + ", save data to : " + csv_file)
 
     @staticmethod
-    def get_area_zufang_info(city_name, area_name):
+    def get_area_zufang_info(city_name, area_name, tag):
         matches = None
         """
         通过爬取页面获取城市指定版块的租房信息
@@ -55,7 +57,10 @@ class ZuFangBaseSpider(BaseSpider):
         chinese_district = get_chinese_district(district_name)
         chinese_area = chinese_area_dict.get(area_name, "")
         zufang_list = list()
-        page = 'http://{0}.{1}.com/zufang/{2}/'.format(city_name, SPIDER_NAME, area_name)
+        if (tag != None):
+            page = 'http://{0}.{1}.com/zufang/{2}/{3}'.format(city_name, SPIDER_NAME, area_name, tag)
+        else:
+            page = 'http://{0}.{1}.com/zufang/{2}/'.format(city_name, SPIDER_NAME, area_name)
         print(page)
 
         headers = create_headers()
@@ -81,7 +86,10 @@ class ZuFangBaseSpider(BaseSpider):
         # 从第一页开始,一直遍历到最后一页
         headers = create_headers()
         for num in range(1, total_page + 1):
-            page = 'http://{0}.{1}.com/zufang/{2}/pg{3}'.format(city_name, SPIDER_NAME, area_name, num)
+            if (tag != None):
+                page = 'http://{0}.{1}.com/zufang/{2}/pg{3}{4}'.format(city_name, SPIDER_NAME, area_name, num, tag)
+            else:
+                page = 'http://{0}.{1}.com/zufang/{2}/pg{3}'.format(city_name, SPIDER_NAME, area_name, num)
             print(page)
             BaseSpider.random_delay()
             response = requests.get(page, timeout=10, headers=headers)
@@ -147,7 +155,8 @@ class ZuFangBaseSpider(BaseSpider):
         return zufang_list
 
     def start(self):
-        city = get_city()
+        # city = get_city()
+        city = "hz"
         self.today_path = create_date_path("{0}/zufang".format(SPIDER_NAME), city, self.date_string)
         # collect_area_zufang('sh', 'beicai')  # For debugging, keep it here
         t1 = time.time()  # 开始计时

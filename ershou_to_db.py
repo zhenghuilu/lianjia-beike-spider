@@ -46,7 +46,9 @@ if __name__ == '__main__':
                           ,pool_timeout=5
                           )
 
-    city = get_city()
+    # 获取城市，默认杭州，如果需要其它城市，打开下面的注释
+    # city = get_city()
+    city = "hz"
     # 准备日期信息，爬到的数据存放到日期相关文件夹下
     date = get_date_string()
     # 获得 csv 文件路径
@@ -89,7 +91,8 @@ if __name__ == '__main__':
                         layout = text_array[4]
                         building_space = text_array[5]
                         price = text_array[6]
-                        desc = text_array[7]
+                        total_price = text_array[7]
+                        desc = text_array[8]
                     else:
                         print("数据解析异常：{0}".format(text))
                         error_count = error_count + 1
@@ -101,7 +104,7 @@ if __name__ == '__main__':
                     price = price.replace(r"元/平","")
                     price = int(price)
                     ## 总价处理 fixme
-                    total_price = price * building_space
+                    total_price = total_price.replace(r"万","")
                     print("count({0}):{1}:{2}:{3}:{4}:{5}:{6}:{7}:{8}:{9}:{10}"
                           .format(count, city_ch, date, district, area, xiaoqu, layout, building_space, price, total_price, desc))
                     # 写入mysql数据库
@@ -112,7 +115,7 @@ if __name__ == '__main__':
                     print(text)
                     print(e)
                     error_count = error_count + 1
-                    # raise e
+                    raise e
 
     # 写入，并且关闭句柄
     db.close()
