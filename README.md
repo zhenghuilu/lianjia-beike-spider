@@ -83,6 +83,28 @@ nj: 南京,
 - 运行对应 ershou_to_db.py 把二手房数据从csv文件导入到数据库中
 - 运行对应 zufang_to_db.py 把租房数据从csv文件导入到数据库中
 
+## 租售比报表
+```sql
+-- 杭州公寓租售比数据查询sql
+select a.district,a.area, a.xiaoqu, 
+a.building_space as 建筑面积, 
+b.min_price*12/(a.min_total_price*10000) as 租售比, 
+b.avg_price*12/(a.min_total_price*10000) as 平均租金租售比,
+a.min_total_price as 最低总价,
+b.min_price as 最低租金,
+b.avg_price as 平均租金
+from
+(select district,area, xiaoqu, building_space, min(total_price) as min_total_price from ershou
+where date = 20240621
+group by district,area,xiaoqu, building_space) a inner join 
+(select district, area, xiaoqu, building_space, min(price) as min_price, avg(price) as avg_price from zufang
+where date = 20240621
+group by district, area, xiaoqu, building_space) b on a.district=b.district and a.area=b.area and a.xiaoqu=b.xiaoqu 
+and a.building_space=b.building_space
+-- order by 租售比 desc
+order by 平均租金租售比 desc
+```
+
 ## 性能
 - 300秒爬取上海市207个版块的2.7万条小区数据，平均每秒90条数据。
 ```
